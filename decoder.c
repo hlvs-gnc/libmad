@@ -94,7 +94,7 @@ void mad_decoder_init(struct mad_decoder *decoder, void *data,
 }
 
 int mad_decoder_finish(struct mad_decoder *decoder)
-{/*
+{
 # if defined(USE_ASYNC)
   if (decoder->mode == MAD_DECODER_MODE_ASYNC && decoder->async.pid) {
     pid_t pid;
@@ -120,12 +120,13 @@ int mad_decoder_finish(struct mad_decoder *decoder)
     return (!WIFEXITED(status) || WEXITSTATUS(status)) ? -1 : 0;
   }
 # endif
-*/
+
   return 0;
 }
 
-/*
-// if defined(USE_ASYNC)
+# if defined(USE_ASYNC)
+
+
 
 static
 enum mad_flow send_io(int fd, void const *data, size_t len)
@@ -293,7 +294,7 @@ enum mad_flow check_message(struct mad_decoder *decoder)
   return result;
 }
 # endif
-*/
+
 static
 enum mad_flow error_default(void *data, struct mad_stream *stream,
 			    struct mad_frame *frame)
@@ -359,7 +360,7 @@ int run_sync(struct mad_decoder *decoder)
       break;
     }
 
-    while (1) {/*
+    while (1) {
 # if defined(USE_ASYNC)
       if (decoder->mode == MAD_DECODER_MODE_ASYNC) {
 	switch (check_message(decoder)) {
@@ -373,7 +374,7 @@ int run_sync(struct mad_decoder *decoder)
 	}
       }
 # endif
-*/
+
       if (decoder->header_func) {
 	if (mad_header_decode(&frame->header, stream) == -1) {
 	  if (!MAD_RECOVERABLE(stream->error))
@@ -464,8 +465,8 @@ int run_sync(struct mad_decoder *decoder)
   return result;
 }
 
-//# if defined(USE_ASYNC)
-/*
+# if defined(USE_ASYNC)
+
 static
 int run_async(struct mad_decoder *decoder)
 {
@@ -529,7 +530,7 @@ int run_async(struct mad_decoder *decoder)
 }
 # endif
 
-*/
+
 /*
  * NAME:	decoder->run()
  * DESCRIPTION:	run the decoder thread either synchronously or asynchronously
@@ -545,12 +546,10 @@ int mad_decoder_run(struct mad_decoder *decoder, enum mad_decoder_mode mode)
     break;
 
   case MAD_DECODER_MODE_ASYNC:
-/*
 # if defined(USE_ASYNC)
     run = run_async;
 # endif
-*/
-break;
+    break;
   }
 
   if (run == 0)
@@ -575,7 +574,7 @@ break;
 int mad_decoder_message(struct mad_decoder *decoder,
 			void *message, unsigned int *len)
 {
-/*
+
 # if defined(USE_ASYNC)
   if (decoder->mode != MAD_DECODER_MODE_ASYNC ||
       send(decoder->async.out, message, *len) != MAD_FLOW_CONTINUE ||
@@ -586,5 +585,5 @@ int mad_decoder_message(struct mad_decoder *decoder,
 # else
   return -1;
 # endif
-*/
+
 }
