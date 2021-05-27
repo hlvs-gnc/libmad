@@ -365,6 +365,7 @@ int run_sync(struct mad_decoder *decoder)
 
     while (1) {
 # if defined(USE_ASYNC)
+/*
       if (decoder->mode == MAD_DECODER_MODE_ASYNC) {
 	switch (check_message(decoder)) {
 	case MAD_FLOW_IGNORE:
@@ -376,6 +377,7 @@ int run_sync(struct mad_decoder *decoder)
 	  goto done;
 	}
       }
+*/
 # endif
 
       if (decoder->header_func) {
