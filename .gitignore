@@ -1,0 +1,10 @@
+.deps/*
+Makefile
+autom4te.cache/*
+config.h
+config.log
+config.status
+libmad.list
+libtool
+msvc++/Makefile
+stamp-h1
