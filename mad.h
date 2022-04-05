@@ -19,6 +19,7 @@
  * If you would like to negotiate alternate licensing terms, you may do
  * so by contacting: Underbit Technologies, Inc. <info@underbit.com>
  */
+# include "printf.h"
 
 # ifdef __cplusplus
 extern "C" {

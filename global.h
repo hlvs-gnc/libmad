@@ -28,9 +28,9 @@
 #  error "cannot define both DEBUG and NDEBUG"
 # endif
 
-# if defined(DEBUG)
-#  include <stdio.h>
-# endif
+//# if defined(DEBUG)
+//#  include <stdio.h>
+//# endif
 
 /* conditional features */
 

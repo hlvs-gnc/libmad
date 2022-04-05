@@ -32,7 +32,7 @@
 # include "frame.h"
 # include "timer.h"
 # include "layer12.h"
-# include "layer3.h"
+//# include "layer3.h"
 
 static
 unsigned long const bitrate_table[5][15] = {
@@ -57,8 +57,8 @@ unsigned int const samplerate_table[3] = { 44100, 48000, 32000 };
 static
 int (*const decoder_table[3])(struct mad_stream *, struct mad_frame *) = {
   mad_layer_I,
-  mad_layer_II,
-  mad_layer_III
+  mad_layer_II
+  //mad_layer_III
 };
 
 /*
