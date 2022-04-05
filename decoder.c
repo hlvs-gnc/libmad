@@ -358,19 +358,6 @@ int run_sync(struct mad_decoder *decoder)
     }
 
     while (1) {
-# if defined(USE_ASYNC)
-      if (decoder->mode == MAD_DECODER_MODE_ASYNC) {
-	switch (check_message(decoder)) {
-	case MAD_FLOW_IGNORE:
-	case MAD_FLOW_CONTINUE:
-	  break;
-	case MAD_FLOW_BREAK:
-	  goto fail;
-	case MAD_FLOW_STOP:
-	  goto done;
-	}
-      }
-# endif
 
       if (decoder->header_func) {
 	if (mad_header_decode(&frame->header, stream) == -1) {
@@ -541,9 +528,6 @@ int mad_decoder_run(struct mad_decoder *decoder, enum mad_decoder_mode mode)
     break;
 
   case MAD_DECODER_MODE_ASYNC:
-# if defined(USE_ASYNC)
-    run = run_async;
-# endif
     break;
   }
 
