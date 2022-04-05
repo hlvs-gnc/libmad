@@ -8,22 +8,22 @@
 /* #undef EXPERIMENTAL */
 
 /* Define to 1 if you have the <assert.h> header file. */
-#define HAVE_ASSERT_H 1
+#define HAVE_ASSERT_H 0 
 
 /* Define to 1 if you have the <dlfcn.h> header file. */
-#define HAVE_DLFCN_H 1
+#define HAVE_DLFCN_H 0
 
 /* Define to 1 if you have the <errno.h> header file. */
 #define HAVE_ERRNO_H 1
 
 /* Define to 1 if you have the `fcntl' function. */
-#define HAVE_FCNTL 1
+#define HAVE_FCNTL 0
 
 /* Define to 1 if you have the <fcntl.h> header file. */
-#define HAVE_FCNTL_H 1
+#define HAVE_FCNTL_H 0
 
 /* Define to 1 if you have the `fork' function. */
-#define HAVE_FORK 1
+#define HAVE_FORK 0
 
 /* Define to 1 if you have the <inttypes.h> header file. */
 #define HAVE_INTTYPES_H 1
@@ -41,7 +41,7 @@
 #define HAVE_MEMORY_H 1
 
 /* Define to 1 if you have the `pipe' function. */
-#define HAVE_PIPE 1
+#define HAVE_PIPE 0
 
 /* Define to 1 if you have the <stdint.h> header file. */
 #define HAVE_STDINT_H 1
@@ -68,7 +68,7 @@
 #define HAVE_UNISTD_H 1
 
 /* Define to 1 if you have the `waitpid' function. */
-#define HAVE_WAITPID 1
+#define HAVE_WAITPID 0
 
 /* Define to disable debugging assertions. */
 /* #undef NDEBUG */
