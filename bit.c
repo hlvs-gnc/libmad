@@ -87,7 +87,6 @@ unsigned short const crc_table[256] = {
  */
 void mad_bit_init(struct mad_bitptr *bitptr, unsigned char const *byte)
 {
-
   bitptr->byte  = byte;
   bitptr->cache = 0;
   bitptr->left  = CHAR_BIT;

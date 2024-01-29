@@ -111,7 +111,7 @@ int mad_decoder_finish(struct mad_decoder *decoder)
     close(decoder->async.out);
 
     decoder->async.pid = 0;
-	    decoder->async.in  = -1;
+    decoder->async.in  = -1;
     decoder->async.out = -1;
 
     if (pid == -1)
@@ -199,11 +199,11 @@ enum mad_flow send(int fd, void const *message, unsigned int size)
 {
   enum mad_flow result;
 
-  // send size 
+  /* send size */
 
   result = send_io(fd, &size, sizeof(size));
 
-  // send message 
+  /* send message */
 
   if (result == MAD_FLOW_CONTINUE)
     result = send_io(fd, message, size);
@@ -220,11 +220,11 @@ enum mad_flow receive(int fd, void **message, unsigned int *size)
   if (*message == 0)
     *size = 0;
 
-  // receive size 
+  /* receive size */
 
   result = receive_io(fd, &actual, sizeof(actual));
 
-  // receive message 
+  /* receive message */
 
   if (result == MAD_FLOW_CONTINUE) {
     if (actual > *size)
@@ -244,7 +244,7 @@ enum mad_flow receive(int fd, void **message, unsigned int *size)
       result = receive_io_blocking(fd, *message, *size);
     }
 
-    // throw away remainder of message 
+    /* throw away remainder of message */
 
     while (actual && result == MAD_FLOW_CONTINUE) {
       char sink[256];
@@ -358,6 +358,19 @@ int run_sync(struct mad_decoder *decoder)
     }
 
     while (1) {
+# if defined(USE_ASYNC)
+      if (decoder->mode == MAD_DECODER_MODE_ASYNC) {
+	switch (check_message(decoder)) {
+	case MAD_FLOW_IGNORE:
+	case MAD_FLOW_CONTINUE:
+	  break;
+	case MAD_FLOW_BREAK:
+	  goto fail;
+	case MAD_FLOW_STOP:
+	  goto done;
+	}
+      }
+# endif
 
       if (decoder->header_func) {
 	if (mad_header_decode(&frame->header, stream) == -1) {
@@ -487,7 +500,7 @@ int run_async(struct mad_decoder *decoder)
   decoder->async.pid = pid;
 
   if (pid) {
-    // parent 
+    /* parent */
 
     close(ptoc[0]);
     close(ctop[1]);
@@ -498,7 +511,7 @@ int run_async(struct mad_decoder *decoder)
     return 0;
   }
 
-  // child 
+  /* child */
 
   close(ptoc[1]);
   close(ctop[0]);
@@ -508,7 +521,7 @@ int run_async(struct mad_decoder *decoder)
 
   _exit(run_sync(decoder));
 
-  // not reached 
+  /* not reached */
   return -1;
 }
 # endif
@@ -528,6 +541,9 @@ int mad_decoder_run(struct mad_decoder *decoder, enum mad_decoder_mode mode)
     break;
 
   case MAD_DECODER_MODE_ASYNC:
+# if defined(USE_ASYNC)
+    run = run_async;
+# endif
     break;
   }
 
@@ -562,6 +578,5 @@ int mad_decoder_message(struct mad_decoder *decoder,
   return 0;
 # else
   return -1;
-
 # endif
 }

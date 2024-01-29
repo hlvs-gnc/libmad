@@ -8,7 +8,7 @@
 /* #undef EXPERIMENTAL */
 
 /* Define to 1 if you have the <assert.h> header file. */
-#define HAVE_ASSERT_H 0 
+#define HAVE_ASSERT_H 1
 
 /* Define to 1 if you have the <dlfcn.h> header file. */
 /* #undef HAVE_DLFCN_H */

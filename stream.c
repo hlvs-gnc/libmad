@@ -25,8 +25,6 @@
 
 # include "global.h"
 
-# include "stdio.h"
-
 # include <stdlib.h>
 
 # include "bit.h"
@@ -81,7 +79,6 @@ void mad_stream_finish(struct mad_stream *stream)
 void mad_stream_buffer(struct mad_stream *stream,
 		       unsigned char const *buffer, unsigned long length)
 {
-  
   stream->buffer = buffer;
   stream->bufend = buffer + length;
 
