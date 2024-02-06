@@ -709,8 +709,10 @@ void synth_full(struct mad_synth *synth, struct mad_frame const *frame,
       clk_dct_elapsed += clk_dct[j][j];
     }
   }
-  
+
+#ifdef PROFILING  
   printf("DCT32 total CLK count: %d\nAverage CLK count: %d\n", clk_dct_elapsed, clk_dct_elapsed/(nch*ns));
+#endif
 }
 # endif
 
