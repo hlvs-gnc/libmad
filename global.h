@@ -32,6 +32,11 @@
 #  include <stdio.h>
 # endif
 
+# ifdef PROFILING
+#  include "iob-timer.h"
+#  include "printf.h"
+# endif
+
 /* conditional features */
 
 # if defined(OPT_SPEED) && defined(OPT_ACCURACY)

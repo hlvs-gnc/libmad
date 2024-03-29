@@ -29,11 +29,6 @@
 # include "frame.h"
 # include "synth.h"
 
-# ifdef PROFILING
-#  include "iob-timer.h"
-#  include "printf.h"
-# endif
-
 /*
  * NAME:	synth->init()
  * DESCRIPTION:	initialize synth struct
@@ -60,8 +55,8 @@ void mad_synth_mute(struct mad_synth *synth)
   for (ch = 0; ch < 2; ++ch) {
     for (s = 0; s < 16; ++s) {
       for (v = 0; v < 8; ++v) {
-	synth->filter[ch][0][0][s][v] = synth->filter[ch][0][1][s][v] =
-	synth->filter[ch][1][0][s][v] = synth->filter[ch][1][1][s][v] = 0;
+        synth->filter[ch][0][0][s][v] = synth->filter[ch][0][1][s][v] =
+        synth->filter[ch][1][0][s][v] = synth->filter[ch][1][1][s][v] = 0;
       }
     }
   }
@@ -563,6 +558,10 @@ static
 void synth_full(struct mad_synth *synth, struct mad_frame const *frame,
 		unsigned int nch, unsigned int ns)
 {
+# ifdef PROFILING
+  timer_reset();
+# endif
+
   unsigned int phase, ch, s, sb, pe, po;
   mad_fixed_t *pcm1, *pcm2, (*filter)[2][2][16][8];
   mad_fixed_t const (*sbsample)[36][32];
@@ -572,11 +571,7 @@ void synth_full(struct mad_synth *synth, struct mad_frame const *frame,
   register mad_fixed64lo_t lo;
 
   unsigned int clk_dct[nch][ns];
-
-# ifdef PROFILING
-  timer_reset();
-# endif
-
+  
   for (ch = 0; ch < nch; ++ch) {
     sbsample = &frame->sbsample[ch];
     filter   = &synth->filter[ch];
@@ -584,14 +579,7 @@ void synth_full(struct mad_synth *synth, struct mad_frame const *frame,
     pcm1     = synth->pcm.samples[ch];
 
     for (s = 0; s < ns; ++s) {
-    
-      dct32((*sbsample)[s], phase >> 1,
-	    (*filter)[0][phase & 1], (*filter)[1][phase & 1]);
-
-    # ifdef PROFILING
-      clk_dct[ch][s] = timer_get_count();
-    # endif
-
+      dct32((*sbsample)[s], phase >> 1, (*filter)[0][phase & 1], (*filter)[1][phase & 1]);
       pe = phase & ~1;
       po = ((phase - 1) & 0xf) | 1;
 
@@ -709,8 +697,15 @@ void synth_full(struct mad_synth *synth, struct mad_frame const *frame,
       clk_dct_elapsed += clk_dct[j][j];
     }
   }
-  
-  printf("DCT32 total CLK count: %d\nAverage CLK count: %d\n", clk_dct_elapsed, clk_dct_elapsed/(nch*ns));
+
+# if PROFILING
+  unsigned long long elapsed_clk_cycles;
+  unsigned int elapsed_us;
+
+  elapsed_clk_cycles = timer_get_count();
+
+  printf("synth_full #clock cycles: %llu\n", elapsed_clk_cycles);
+# endif
 }
 # endif
 
@@ -730,10 +725,6 @@ void synth_half(struct mad_synth *synth, struct mad_frame const *frame,
   register mad_fixed64hi_t hi;
   register mad_fixed64lo_t lo;
 
-# ifdef PROFILING
-  timer_reset();
-# endif
-
   for (ch = 0; ch < nch; ++ch) {
     sbsample = &frame->sbsample[ch];
     filter   = &synth->filter[ch];
@@ -741,8 +732,7 @@ void synth_half(struct mad_synth *synth, struct mad_frame const *frame,
     pcm1     = synth->pcm.samples[ch];
 
     for (s = 0; s < ns; ++s) {
-      dct32((*sbsample)[s], phase >> 1,
-	    (*filter)[0][phase & 1], (*filter)[1][phase & 1]);
+      dct32((*sbsample)[s], phase >> 1, (*filter)[0][phase & 1], (*filter)[1][phase & 1]);
 
       pe = phase & ~1;
       po = ((phase - 1) & 0xf) | 1;
@@ -862,6 +852,7 @@ void synth_half(struct mad_synth *synth, struct mad_frame const *frame,
  */
 void mad_synth_frame(struct mad_synth *synth, struct mad_frame const *frame)
 {
+
   unsigned int nch, ns;
   void (*synth_frame)(struct mad_synth *, struct mad_frame const *,
 		      unsigned int, unsigned int);
@@ -875,6 +866,10 @@ void mad_synth_frame(struct mad_synth *synth, struct mad_frame const *frame)
 
   synth_frame = synth_full;
 
+# ifdef PROFILING
+  timer_reset();
+# endif
+
   if (frame->options & MAD_OPTION_HALFSAMPLERATE) {
     synth->pcm.samplerate /= 2;
     synth->pcm.length     /= 2;
@@ -885,4 +880,13 @@ void mad_synth_frame(struct mad_synth *synth, struct mad_frame const *frame)
   synth_frame(synth, frame, nch, ns);
 
   synth->phase = (synth->phase + ns) % 16;
+
+# if PROFILING
+  unsigned long long elapsed_clk_cycles;
+  unsigned int elapsed_us;
+
+  elapsed_clk_cycles = timer_get_count();
+
+  printf("mad_synth_frame #clock cycles: %llu\n", elapsed_clk_cycles);
+# endif
 }
