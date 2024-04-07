@@ -296,6 +296,7 @@ static
 enum mad_flow error_default(void *data, struct mad_stream *stream,
 			    struct mad_frame *frame)
 {
+
   int *bad_last_frame = data;
 
   switch (stream->error) {
@@ -315,6 +316,7 @@ enum mad_flow error_default(void *data, struct mad_stream *stream,
 static
 int run_sync(struct mad_decoder *decoder)
 {
+
   enum mad_flow (*error_func)(void *, struct mad_stream *, struct mad_frame *);
   void *error_data;
   int bad_last_frame = 0;
@@ -347,117 +349,116 @@ int run_sync(struct mad_decoder *decoder)
 
   do {
     switch (decoder->input_func(decoder->cb_data, stream)) {
-    case MAD_FLOW_STOP:
-      goto done;
-    case MAD_FLOW_BREAK:
-      goto fail;
-    case MAD_FLOW_IGNORE:
-      continue;
-    case MAD_FLOW_CONTINUE:
-      break;
+      case MAD_FLOW_STOP:
+        goto done;
+      case MAD_FLOW_BREAK:
+        goto fail;
+      case MAD_FLOW_IGNORE:
+        continue;
+      case MAD_FLOW_CONTINUE:
+        break;
     }
 
     while (1) {
 # if defined(USE_ASYNC)
       if (decoder->mode == MAD_DECODER_MODE_ASYNC) {
-	switch (check_message(decoder)) {
-	case MAD_FLOW_IGNORE:
-	case MAD_FLOW_CONTINUE:
-	  break;
-	case MAD_FLOW_BREAK:
-	  goto fail;
-	case MAD_FLOW_STOP:
-	  goto done;
-	}
+        switch (check_message(decoder)) {
+        case MAD_FLOW_IGNORE:
+        case MAD_FLOW_CONTINUE:
+          break;
+        case MAD_FLOW_BREAK:
+          goto fail;
+        case MAD_FLOW_STOP:
+          goto done;
+        }
       }
 # endif
 
       if (decoder->header_func) {
-	if (mad_header_decode(&frame->header, stream) == -1) {
-	  if (!MAD_RECOVERABLE(stream->error))
-	    break;
+        if (mad_header_decode(&frame->header, stream) == -1) {
+          if (!MAD_RECOVERABLE(stream->error))
+            break;
 
-	  switch (error_func(error_data, stream, frame)) {
-	  case MAD_FLOW_STOP:
-	    goto done;
-	  case MAD_FLOW_BREAK:
-	    goto fail;
-	  case MAD_FLOW_IGNORE:
-	  case MAD_FLOW_CONTINUE:
-	  default:
-	    continue;
-	  }
-	}
+          switch (error_func(error_data, stream, frame)) {
+            case MAD_FLOW_STOP:
+              goto done;
+            case MAD_FLOW_BREAK:
+              goto fail;
+            case MAD_FLOW_IGNORE:
+            case MAD_FLOW_CONTINUE:
+            default:
+              continue;
+          }
+        }
 
-	switch (decoder->header_func(decoder->cb_data, &frame->header)) {
-	case MAD_FLOW_STOP:
-	  goto done;
-	case MAD_FLOW_BREAK:
-	  goto fail;
-	case MAD_FLOW_IGNORE:
-	  continue;
-	case MAD_FLOW_CONTINUE:
-	  break;
-	}
+        switch (decoder->header_func(decoder->cb_data, &frame->header)) {
+          case MAD_FLOW_STOP:
+            goto done;
+          case MAD_FLOW_BREAK:
+            goto fail;
+          case MAD_FLOW_IGNORE:
+            continue;
+          case MAD_FLOW_CONTINUE:
+            break;
+        }
       }
 
       if (mad_frame_decode(frame, stream) == -1) {
-	if (!MAD_RECOVERABLE(stream->error))
-	  break;
+        if (!MAD_RECOVERABLE(stream->error))
+          break;
 
-	switch (error_func(error_data, stream, frame)) {
-	case MAD_FLOW_STOP:
-	  goto done;
-	case MAD_FLOW_BREAK:
-	  goto fail;
-	case MAD_FLOW_IGNORE:
-	  break;
-	case MAD_FLOW_CONTINUE:
-	default:
-	  continue;
-	}
+        switch (error_func(error_data, stream, frame)) {
+          case MAD_FLOW_STOP:
+            goto done;
+          case MAD_FLOW_BREAK:
+            goto fail;
+          case MAD_FLOW_IGNORE:
+            break;
+          case MAD_FLOW_CONTINUE:
+          default:
+            continue;
+        }
       }
       else
-	bad_last_frame = 0;
+        bad_last_frame = 0;
 
       if (decoder->filter_func) {
-	switch (decoder->filter_func(decoder->cb_data, stream, frame)) {
-	case MAD_FLOW_STOP:
-	  goto done;
-	case MAD_FLOW_BREAK:
-	  goto fail;
-	case MAD_FLOW_IGNORE:
-	  continue;
-	case MAD_FLOW_CONTINUE:
-	  break;
-	}
+        switch (decoder->filter_func(decoder->cb_data, stream, frame)) {
+          case MAD_FLOW_STOP:
+            goto done;
+          case MAD_FLOW_BREAK:
+            goto fail;
+          case MAD_FLOW_IGNORE:
+            continue;
+          case MAD_FLOW_CONTINUE:
+            break;
+        }
       }
-
       mad_synth_frame(synth, frame);
 
       if (decoder->output_func) {
-	switch (decoder->output_func(decoder->cb_data,
-				     &frame->header, &synth->pcm)) {
-	case MAD_FLOW_STOP:
-	  goto done;
-	case MAD_FLOW_BREAK:
-	  goto fail;
-	case MAD_FLOW_IGNORE:
-	case MAD_FLOW_CONTINUE:
-	  break;
-	}
+        switch (decoder->output_func(decoder->cb_data,
+                  &frame->header, &synth->pcm)) {
+          case MAD_FLOW_STOP:
+            goto done;
+          case MAD_FLOW_BREAK:
+            goto fail;
+          case MAD_FLOW_IGNORE:
+          case MAD_FLOW_CONTINUE:
+            break;
+        }
       }
     }
   }
   while (stream->error == MAD_ERROR_BUFLEN);
 
- fail:
-  result = -1;
+  fail:
+    result = -1;
 
- done:
-  mad_synth_finish(synth);
-  mad_frame_finish(frame);
-  mad_stream_finish(stream);
+  done:
+    mad_synth_finish(synth);
+    mad_frame_finish(frame);
+    mad_stream_finish(stream);
 
   return result;
 }
@@ -532,19 +533,20 @@ int run_async(struct mad_decoder *decoder)
  */
 int mad_decoder_run(struct mad_decoder *decoder, enum mad_decoder_mode mode)
 {
+
   int result;
   int (*run)(struct mad_decoder *) = 0;
 
   switch (decoder->mode = mode) {
-  case MAD_DECODER_MODE_SYNC:
-    run = run_sync;
-    break;
+    case MAD_DECODER_MODE_SYNC:
+      run = run_sync;
+      break;
 
-  case MAD_DECODER_MODE_ASYNC:
-# if defined(USE_ASYNC)
-    run = run_async;
-# endif
-    break;
+    case MAD_DECODER_MODE_ASYNC:
+  # if defined(USE_ASYNC)
+      run = run_async;
+  # endif
+      break;
   }
 
   if (run == 0)

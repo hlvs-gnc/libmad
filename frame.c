@@ -119,6 +119,11 @@ void mad_frame_finish(struct mad_frame *frame)
 static
 int decode_header(struct mad_header *header, struct mad_stream *stream)
 {
+# if (PROFILE_I == 1 || PROFILE_II == 1)
+  register unsigned long long clk_cycle0, clk_cyclef, clk_diff;
+  clk_cycle0 = timer_get_count();
+#endif
+
   unsigned int index;
 
   header->flags        = 0;
@@ -228,6 +233,12 @@ int decode_header(struct mad_header *header, struct mad_stream *stream)
   if (header->flags & MAD_FLAG_PROTECTION)
     header->crc_target = mad_bit_read(&stream->ptr, 16);
 
+# if (PROFILE_I == 1 || PROFILE_II == 1)
+  clk_cyclef = timer_get_count();
+  clk_diff = clk_cyclef - clk_cycle0;
+  profiling_frame[0] = clk_diff;
+#endif
+
   return 0;
 }
 
@@ -257,8 +268,8 @@ int free_bitrate(struct mad_stream *stream, struct mad_header const *header)
     peek_header = *header;
 
     if (decode_header(&peek_header, &peek_stream) == 0 &&
-	peek_header.layer == header->layer &&
-	peek_header.samplerate == header->samplerate) {
+        peek_header.layer == header->layer &&
+        peek_header.samplerate == header->samplerate) {
       unsigned int N;
 
       ptr = mad_bit_nextbyte(&stream->ptr);
@@ -266,16 +277,16 @@ int free_bitrate(struct mad_stream *stream, struct mad_header const *header)
       N = ptr - stream->this_frame;
 
       if (header->layer == MAD_LAYER_I) {
-	rate = (unsigned long) header->samplerate *
-	  (N - 4 * pad_slot + 4) / 48 / 1000;
+        rate = (unsigned long) header->samplerate *
+          (N - 4 * pad_slot + 4) / 48 / 1000;
       }
       else {
-	rate = (unsigned long) header->samplerate *
-	  (N - pad_slot + 1) / slots_per_frame / 1000;
+        rate = (unsigned long) header->samplerate *
+          (N - pad_slot + 1) / slots_per_frame / 1000;
       }
 
       if (rate >= 8)
-	break;
+	      break;
     }
 
     mad_bit_skip(&stream->ptr, 8);
@@ -299,6 +310,11 @@ int free_bitrate(struct mad_stream *stream, struct mad_header const *header)
  */
 int mad_header_decode(struct mad_header *header, struct mad_stream *stream)
 {
+# if (PROFILE_I == 1 || PROFILE_II == 1)
+  register unsigned long long clk_cycle0, clk_cyclef, clk_diff;
+  clk_cycle0 = timer_get_count();
+#endif
+
   register unsigned char const *ptr, *end;
   unsigned int pad_slot, N;
 
@@ -352,7 +368,7 @@ int mad_header_decode(struct mad_header *header, struct mad_stream *stream)
 
     if (mad_stream_sync(stream) == -1) {
       if (end - stream->next_frame >= MAD_BUFFER_GUARD)
-	stream->next_frame = end - MAD_BUFFER_GUARD;
+	      stream->next_frame = end - MAD_BUFFER_GUARD;
 
       stream->error = MAD_ERROR_BUFLEN;
       goto fail;
@@ -377,9 +393,9 @@ int mad_header_decode(struct mad_header *header, struct mad_stream *stream)
   /* calculate free bit rate */
   if (header->bitrate == 0) {
     if ((stream->freerate == 0 || !stream->sync ||
-	 (header->layer == MAD_LAYER_III && stream->freerate > 640000)) &&
-	free_bitrate(stream, header) == -1)
-      goto fail;
+	      (header->layer == MAD_LAYER_III && stream->freerate > 640000)) &&
+	      free_bitrate(stream, header) == -1)
+          goto fail;
 
     header->bitrate = stream->freerate;
     header->flags  |= MAD_FLAG_FREEFORMAT;
@@ -394,7 +410,7 @@ int mad_header_decode(struct mad_header *header, struct mad_stream *stream)
     unsigned int slots_per_frame;
 
     slots_per_frame = (header->layer == MAD_LAYER_III &&
-		       (header->flags & MAD_FLAG_LSF_EXT)) ? 72 : 144;
+		                  (header->flags & MAD_FLAG_LSF_EXT)) ? 72 : 144;
 
     N = (slots_per_frame * header->bitrate / header->samplerate) + pad_slot;
   }
@@ -423,12 +439,23 @@ int mad_header_decode(struct mad_header *header, struct mad_stream *stream)
 
   header->flags |= MAD_FLAG_INCOMPLETE;
 
+# if (PROFILE_I == 1 || PROFILE_II == 1)
+  clk_cyclef = timer_get_count();
+  clk_diff = clk_cyclef - clk_cycle0;
+  profiling_frame[1] = clk_diff;
+#endif
+
   return 0;
 
- fail:
-  stream->sync = 0;
+  fail:
+    stream->sync = 0;
+# if (PROFILE_I == 1 || PROFILE_II == 1)
+  clk_cyclef = timer_get_count();
+  clk_diff = clk_cyclef - clk_cycle0;
+  profiling_frame[1] = clk_diff;
+#endif
+    return -1;
 
-  return -1;
 }
 
 /*
@@ -437,6 +464,11 @@ int mad_header_decode(struct mad_header *header, struct mad_stream *stream)
  */
 int mad_frame_decode(struct mad_frame *frame, struct mad_stream *stream)
 {
+# if (PROFILE_I == 1 || PROFILE_II == 1)
+  register unsigned long long clk_cycle0, clk_cyclef, clk_diff;
+  clk_cycle0 = timer_get_count();
+#endif
+
   frame->options = stream->options;
 
   /* header() */
@@ -444,7 +476,7 @@ int mad_frame_decode(struct mad_frame *frame, struct mad_stream *stream)
 
   if (!(frame->header.flags & MAD_FLAG_INCOMPLETE) &&
       mad_header_decode(&frame->header, stream) == -1)
-    goto fail;
+        goto fail;
 
   /* audio_data() */
 
@@ -470,11 +502,22 @@ int mad_frame_decode(struct mad_frame *frame, struct mad_stream *stream)
     mad_bit_finish(&next_frame);
   }
 
+# if (PROFILE_I == 1 || PROFILE_II == 1)
+  clk_cyclef = timer_get_count();
+  clk_diff = clk_cyclef - clk_cycle0;
+  profiling_frame[2] = clk_diff;
+#endif
+
   return 0;
 
- fail:
-  stream->anc_bitlen = 0;
-  return -1;
+  fail:
+    stream->anc_bitlen = 0;
+# if (PROFILE_I == 1 || PROFILE_II == 1)
+  clk_cyclef = timer_get_count();
+  clk_diff = clk_cyclef - clk_cycle0;
+  profiling_frame[2] = clk_diff;
+#endif
+    return -1;
 }
 
 /*
@@ -495,8 +538,8 @@ void mad_frame_mute(struct mad_frame *frame)
   if (frame->overlap) {
     for (s = 0; s < 18; ++s) {
       for (sb = 0; sb < 32; ++sb) {
-	(*frame->overlap)[0][sb][s] =
-	(*frame->overlap)[1][sb][s] = 0;
+        (*frame->overlap)[0][sb][s] =
+        (*frame->overlap)[1][sb][s] = 0;
       }
     }
   }

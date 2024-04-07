@@ -60,7 +60,7 @@ mad_fixed_t mad_f_div(mad_fixed_t x, mad_fixed_t y)
   }
 
   if (q > mad_f_intpart(MAD_F_MAX) &&
-      !(q == -mad_f_intpart(MAD_F_MIN) && r == 0 && (x < 0) != (y < 0)))
+    !(q == -mad_f_intpart(MAD_F_MIN) && r == 0 && (x < 0) != (y < 0)))
     return 0;
 
   for (bits = MAD_F_FRACBITS; bits && r; --bits) {
