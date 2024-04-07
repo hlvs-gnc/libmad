@@ -120,7 +120,7 @@ static
 int decode_header(struct mad_header *header, struct mad_stream *stream)
 {
 # if (PROFILE_I == 1 || PROFILE_II == 1)
-  register unsigned long long clk_cycle0, clk_cyclef, clk_diff;
+  register uint64_t clk_cycle0, clk_cyclef, clk_diff;
   clk_cycle0 = timer_get_count();
 #endif
 
@@ -311,7 +311,7 @@ int free_bitrate(struct mad_stream *stream, struct mad_header const *header)
 int mad_header_decode(struct mad_header *header, struct mad_stream *stream)
 {
 # if (PROFILE_I == 1 || PROFILE_II == 1)
-  register unsigned long long clk_cycle0, clk_cyclef, clk_diff;
+  register uint64_t clk_cycle0, clk_cyclef, clk_diff;
   clk_cycle0 = timer_get_count();
 #endif
 
@@ -465,7 +465,7 @@ int mad_header_decode(struct mad_header *header, struct mad_stream *stream)
 int mad_frame_decode(struct mad_frame *frame, struct mad_stream *stream)
 {
 # if (PROFILE_I == 1 || PROFILE_II == 1)
-  register unsigned long long clk_cycle0, clk_cyclef, clk_diff;
+  register uint64_t clk_cycle0, clk_cyclef, clk_diff;
   clk_cycle0 = timer_get_count();
 #endif
 

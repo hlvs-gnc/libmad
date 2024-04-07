@@ -603,7 +603,7 @@ static void synth_full(struct mad_synth *synth, struct mad_frame const *frame,
                        unsigned int nch, unsigned int ns)
 {
 # if (PROFILE_I == 1 || PROFILE_II == 1)
-  register unsigned long long clk_cycle0, clk_cyclef, clk_diff;
+  register uint64_t clk_cycle0, clk_cyclef, clk_diff;
   clk_cycle0 = timer_get_count();
 #endif
 
@@ -753,7 +753,7 @@ static void synth_half(struct mad_synth *synth, struct mad_frame const *frame,
                        unsigned int nch, unsigned int ns)
 {
 # if (PROFILE_I == 1 || PROFILE_II == 1)
-  register unsigned long long clk_cycle0, clk_cyclef, clk_diff;
+  register uint64_t clk_cycle0, clk_cyclef, clk_diff;
   clk_cycle0 = timer_get_count();
 #endif
 
@@ -901,7 +901,7 @@ void mad_synth_frame(struct mad_synth *synth, struct mad_frame const *frame)
 {
 
 # if (PROFILE_I == 1 || PROFILE_II == 1)
-  register unsigned long long clk_cycle0, clk_cyclef, clk_diff;
+  register uint64_t clk_cycle0, clk_cyclef, clk_diff;
   clk_cycle0 = timer_get_count();
 #endif
 

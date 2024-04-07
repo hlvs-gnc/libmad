@@ -75,7 +75,7 @@ static
 mad_fixed_t I_sample(struct mad_bitptr *ptr, unsigned int nb)
 {
 # if (PROFILE_I == 1 || PROFILE_I == 1)
-  register unsigned long long clk_cycle0, clk_cyclef, clk_diff;
+  register uint64_t clk_cycle0, clk_cyclef, clk_diff;
   clk_cycle0 = timer_get_count();
 #endif
 
@@ -115,7 +115,7 @@ mad_fixed_t I_sample(struct mad_bitptr *ptr, unsigned int nb)
 int mad_layer_I(struct mad_stream *stream, struct mad_frame *frame)
 {
 # if (PROFILE_I == 1 || PROFILE_II == 1)
-  register unsigned long long clk_cycle0, clk_cyclef, clk_diff;
+  register uint64_t clk_cycle0, clk_cyclef, clk_diff;
   clk_cycle0 = timer_get_count();
 #endif
 
@@ -305,7 +305,7 @@ void II_samples(struct mad_bitptr *ptr,
 		mad_fixed_t output[3])
 {
 # if (PROFILE_I == 1 || PROFILE_II == 1)
-  register unsigned long long clk_cycle0, clk_cyclef, clk_diff;
+  register uint64_t clk_cycle0, clk_cyclef, clk_diff;
   clk_cycle0 = timer_get_count();
 #endif
 
@@ -363,7 +363,7 @@ void II_samples(struct mad_bitptr *ptr,
 int mad_layer_II(struct mad_stream *stream, struct mad_frame *frame)
 {
 # if (PROFILE_I == 1 || PROFILE_II == 1)
-  register unsigned long long clk_cycle0, clk_cyclef, clk_diff;
+  register uint64_t clk_cycle0, clk_cyclef, clk_diff;
   clk_cycle0 = timer_get_count();
 #endif
 

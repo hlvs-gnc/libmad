@@ -510,6 +510,11 @@ enum mad_error III_sideinfo(struct mad_bitptr *ptr, unsigned int nch,
 			    unsigned int *data_bitlen,
 			    unsigned int *priv_bitlen)
 {
+# if (PROFILE_I == 1 || PROFILE_II == 1)
+  register unsigned long long clk_cycle0, clk_cyclef, clk_diff;
+  clk_cycle0 = timer_get_count();
+#endif
+
   unsigned int ngr, gr, ch, i;
   enum mad_error result = MAD_ERROR_NONE;
 
@@ -588,6 +593,12 @@ enum mad_error III_sideinfo(struct mad_bitptr *ptr, unsigned int nch,
     }
   }
 
+# if (PROFILE_I == 1 || PROFILE_II == 1)
+  clk_cyclef = timer_get_count();
+  clk_diff = clk_cyclef - clk_cycle0;
+  profiling_III[0] = clk_diff;
+#endif
+
   return result;
 }
 
@@ -600,6 +611,11 @@ unsigned int III_scalefactors_lsf(struct mad_bitptr *ptr,
 				  struct channel *channel,
 				  struct channel *gr1ch, int mode_extension)
 {
+# if (PROFILE_I == 1 || PROFILE_II == 1)
+  register unsigned long long clk_cycle0, clk_cyclef, clk_diff;
+  clk_cycle0 = timer_get_count();
+#endif
+
   struct mad_bitptr start;
   unsigned int scalefac_compress, index, slen[4], part, n, i;
   unsigned char const *nsfb;
@@ -703,6 +719,12 @@ unsigned int III_scalefactors_lsf(struct mad_bitptr *ptr,
     }
   }
 
+# if (PROFILE_I == 1 || PROFILE_II == 1)
+  clk_cyclef = timer_get_count();
+  clk_diff = clk_cyclef - clk_cycle0;
+  profiling_III[1] = clk_diff;
+#endif
+
   return mad_bit_length(&start, ptr);
 }
 
@@ -714,6 +736,11 @@ static
 unsigned int III_scalefactors(struct mad_bitptr *ptr, struct channel *channel,
 			      struct channel const *gr0ch, unsigned int scfsi)
 {
+# if (PROFILE_I == 1 || PROFILE_II == 1)
+  register unsigned long long clk_cycle0, clk_cyclef, clk_diff;
+  clk_cycle0 = timer_get_count();
+#endif
+
   struct mad_bitptr start;
   unsigned int slen1, slen2, sfbi;
 
@@ -779,6 +806,12 @@ unsigned int III_scalefactors(struct mad_bitptr *ptr, struct channel *channel,
     channel->scalefac[21] = 0;
   }
 
+# if (PROFILE_I == 1 || PROFILE_II == 1)
+  clk_cyclef = timer_get_count();
+  clk_diff = clk_cyclef - clk_cycle0;
+  profiling_III[2] = clk_diff;
+#endif
+
   return mad_bit_length(&start, ptr);
 }
 
@@ -812,6 +845,11 @@ static
 void III_exponents(struct channel const *channel,
 		   unsigned char const *sfbwidth, signed int exponents[39])
 {
+# if (PROFILE_I == 1 || PROFILE_II == 1)
+  register unsigned long long clk_cycle0, clk_cyclef, clk_diff;
+  clk_cycle0 = timer_get_count();
+#endif
+
   signed int gain;
   unsigned int scalefac_multiplier, sfbi;
 
@@ -873,6 +911,12 @@ void III_exponents(struct channel const *channel,
       }
     }
   }
+
+# if (PROFILE_I == 1 || PROFILE_II == 1)
+  clk_cyclef = timer_get_count();
+  clk_diff = clk_cyclef - clk_cycle0;
+  profiling_III[3] = clk_diff;
+#endif
 }
 
 /*
@@ -882,6 +926,11 @@ void III_exponents(struct channel const *channel,
 static
 mad_fixed_t III_requantize(unsigned int value, signed int exp)
 {
+# if (PROFILE_I == 1 || PROFILE_II == 1)
+  register unsigned long long clk_cycle0, clk_cyclef, clk_diff;
+  clk_cycle0 = timer_get_count();
+#endif
+
   mad_fixed_t requantized;
   signed int frac;
   struct fixedfloat const *power;
@@ -916,6 +965,12 @@ mad_fixed_t III_requantize(unsigned int value, signed int exp)
       requantized <<= exp;
   }
 
+# if (PROFILE_I == 1 || PROFILE_II == 1)
+  clk_cyclef = timer_get_count();
+  clk_diff = clk_cyclef - clk_cycle0;
+  profiling_III[4] = clk_diff;
+#endif
+
   return frac ? mad_f_mul(requantized, root_table[3 + frac]) : requantized;
 }
 
@@ -935,6 +990,11 @@ enum mad_error III_huffdecode(struct mad_bitptr *ptr, mad_fixed_t xr[576],
 			      unsigned char const *sfbwidth,
 			      unsigned int part2_length)
 {
+# if (PROFILE_I == 1 || PROFILE_II == 1)
+  register unsigned long long clk_cycle0, clk_cyclef, clk_diff;
+  clk_cycle0 = timer_get_count();
+#endif
+
   signed int exponents[39], exp;
   signed int const *expptr;
   struct mad_bitptr peek;
@@ -1267,6 +1327,12 @@ enum mad_error III_huffdecode(struct mad_bitptr *ptr, mad_fixed_t xr[576],
     xrptr += 2;
   }
 
+# if (PROFILE_I == 1 || PROFILE_II == 1)
+  clk_cyclef = timer_get_count();
+  clk_diff = clk_cyclef - clk_cycle0;
+  profiling_III[5] = clk_diff;
+#endif
+
   return MAD_ERROR_NONE;
 }
 
@@ -1281,6 +1347,11 @@ static
 void III_reorder(mad_fixed_t xr[576], struct channel const *channel,
 		 unsigned char const sfbwidth[39])
 {
+# if (PROFILE_I == 1 || PROFILE_II == 1)
+  register unsigned long long clk_cycle0, clk_cyclef, clk_diff;
+  clk_cycle0 = timer_get_count();
+#endif
+
   mad_fixed_t tmp[32][3][6];
   unsigned int sb, l, f, w, sbw[3], sw[3];
 
@@ -1317,6 +1388,12 @@ void III_reorder(mad_fixed_t xr[576], struct channel const *channel,
     }
   }
 
+# if (PROFILE_I == 1 || PROFILE_II == 1)
+  clk_cyclef = timer_get_count();
+  clk_diff = clk_cyclef - clk_cycle0;
+  profiling_III[6] = clk_diff;
+#endif
+
   memcpy(&xr[18 * sb], &tmp[sb], (576 - 18 * sb) * sizeof(mad_fixed_t));
 }
 
@@ -1330,6 +1407,11 @@ enum mad_error III_stereo(mad_fixed_t xr[2][576],
 			  struct mad_header *header,
 			  unsigned char const *sfbwidth)
 {
+# if (PROFILE_I == 1 || PROFILE_II == 1)
+  register unsigned long long clk_cycle0, clk_cyclef, clk_diff;
+  clk_cycle0 = timer_get_count();
+#endif
+
   short modes[39];
   unsigned int sfbi, l, n, i;
 
@@ -1530,6 +1612,12 @@ enum mad_error III_stereo(mad_fixed_t xr[2][576],
     }
   }
 
+# if (PROFILE_I == 1 || PROFILE_II == 1)
+  clk_cyclef = timer_get_count();
+  clk_diff = clk_cyclef - clk_cycle0;
+  profiling_III[7] = clk_diff;
+#endif
+
   return MAD_ERROR_NONE;
 }
 
@@ -1540,6 +1628,11 @@ enum mad_error III_stereo(mad_fixed_t xr[2][576],
 static
 void III_aliasreduce(mad_fixed_t xr[576], int lines)
 {
+# if (PROFILE_I == 1 || PROFILE_II == 1)
+  register unsigned long long clk_cycle0, clk_cyclef, clk_diff;
+  clk_cycle0 = timer_get_count();
+#endif
+
   mad_fixed_t const *bound;
   int i;
 
@@ -1570,6 +1663,12 @@ void III_aliasreduce(mad_fixed_t xr[576], int lines)
 # endif
     }
   }
+
+# if (PROFILE_I == 1 || PROFILE_II == 1)
+  clk_cyclef = timer_get_count();
+  clk_diff = clk_cyclef - clk_cycle0;
+  profiling_III[8] = clk_diff;
+#endif
 }
 
 # if defined(ASO_IMDCT)
@@ -1579,6 +1678,11 @@ void III_imdct_l(mad_fixed_t const [18], mad_fixed_t [36], unsigned int);
 static
 void fastsdct(mad_fixed_t const x[9], mad_fixed_t y[18])
 {
+# if (PROFILE_I == 1 || PROFILE_II == 1)
+  register unsigned long long clk_cycle0, clk_cyclef, clk_diff;
+  clk_cycle0 = timer_get_count();
+#endif
+
   mad_fixed_t a0,  a1,  a2,  a3,  a4,  a5,  a6,  a7,  a8,  a9,  a10, a11, a12;
   mad_fixed_t a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, a24, a25;
   mad_fixed_t m0,  m1,  m2,  m3,  m4,  m5,  m6,  m7;
@@ -1642,11 +1746,22 @@ void fastsdct(mad_fixed_t const x[9], mad_fixed_t y[18])
   y[12] = a12 - 2 * a18;
   y[14] = a23 + m0;
   y[16] = a22 + m7;
+
+# if (PROFILE_I == 1 || PROFILE_II == 1)
+  clk_cyclef = timer_get_count();
+  clk_diff = clk_cyclef - clk_cycle0;
+  profiling_III[9] = clk_diff;
+#endif
 }
 
 static inline
 void sdctII(mad_fixed_t const x[18], mad_fixed_t X[18])
 {
+# if (PROFILE_I == 1 || PROFILE_II == 1)
+  register unsigned long long clk_cycle0, clk_cyclef, clk_diff;
+  clk_cycle0 = timer_get_count();
+#endif
+
   mad_fixed_t tmp[9];
   int i;
 
@@ -1687,11 +1802,22 @@ void sdctII(mad_fixed_t const x[18], mad_fixed_t X[18])
     X[i + 4] -= X[(i + 4) - 2];
     X[i + 6] -= X[(i + 6) - 2];
   }
+
+# if (PROFILE_I == 1 || PROFILE_II == 1)
+  clk_cyclef = timer_get_count();
+  clk_diff = clk_cyclef - clk_cycle0;
+  profiling_III[10] = clk_diff;
+#endif
 }
 
 static inline
 void dctIV(mad_fixed_t const y[18], mad_fixed_t X[18])
 {
+# if (PROFILE_I == 1 || PROFILE_II == 1)
+  register unsigned long long clk_cycle0, clk_cyclef, clk_diff;
+  clk_cycle0 = timer_get_count();
+#endif
+
   mad_fixed_t tmp[18];
   int i;
 
@@ -1727,6 +1853,12 @@ void dctIV(mad_fixed_t const y[18], mad_fixed_t X[18])
     X[i + 3] = X[i + 3] / 2 - X[(i + 3) - 1];
   }
   X[17] = X[17] / 2 - X[16];
+
+# if (PROFILE_I == 1 || PROFILE_II == 1)
+  clk_cyclef = timer_get_count();
+  clk_diff = clk_cyclef - clk_cycle0;
+  profiling_III[11] = clk_diff;
+#endif
 }
 
 /*
@@ -1736,6 +1868,11 @@ void dctIV(mad_fixed_t const y[18], mad_fixed_t X[18])
 static inline
 void imdct36(mad_fixed_t const x[18], mad_fixed_t y[36])
 {
+# if (PROFILE_I == 1 || PROFILE_II == 1)
+  register unsigned long long clk_cycle0, clk_cyclef, clk_diff;
+  clk_cycle0 = timer_get_count();
+#endif
+
   mad_fixed_t tmp[18];
   int i;
 
@@ -1760,6 +1897,12 @@ void imdct36(mad_fixed_t const x[18], mad_fixed_t y[36])
     y[i + 1] = -tmp[(i + 1) - 27];
     y[i + 2] = -tmp[(i + 2) - 27];
   }
+
+# if (PROFILE_I == 1 || PROFILE_II == 1)
+  clk_cyclef = timer_get_count();
+  clk_diff = clk_cyclef - clk_cycle0;
+  profiling_III[12] = clk_diff;
+#endif
 }
 #  else
 /*
@@ -2062,6 +2205,11 @@ static
 void III_imdct_l(mad_fixed_t const X[18], mad_fixed_t z[36],
 		 unsigned int block_type)
 {
+# if (PROFILE_I == 1 || PROFILE_II == 1)
+  register unsigned long long clk_cycle0, clk_cyclef, clk_diff;
+  clk_cycle0 = timer_get_count();
+#endif
+
   unsigned int i;
 
   /* IMDCT */
@@ -2138,6 +2286,12 @@ void III_imdct_l(mad_fixed_t const X[18], mad_fixed_t z[36],
     }
     break;
   }
+
+# if (PROFILE_I == 1 || PROFILE_II == 1)
+  clk_cyclef = timer_get_count();
+  clk_diff = clk_cyclef - clk_cycle0;
+  profiling_III[13] = clk_diff;
+#endif
 }
 # endif  /* ASO_IMDCT */
 
@@ -2148,6 +2302,11 @@ void III_imdct_l(mad_fixed_t const X[18], mad_fixed_t z[36],
 static
 void III_imdct_s(mad_fixed_t const X[18], mad_fixed_t z[36])
 {
+# if (PROFILE_I == 1 || PROFILE_II == 1)
+  register unsigned long long clk_cycle0, clk_cyclef, clk_diff;
+  clk_cycle0 = timer_get_count();
+#endif
+
   mad_fixed_t y[36], *yptr;
   mad_fixed_t const *wptr;
   int w, i;
@@ -2218,6 +2377,12 @@ void III_imdct_s(mad_fixed_t const X[18], mad_fixed_t z[36])
     ++yptr;
     ++wptr;
   }
+
+# if (PROFILE_I == 1 || PROFILE_II == 1)
+  clk_cyclef = timer_get_count();
+  clk_diff = clk_cyclef - clk_cycle0;
+  profiling_III[14] = clk_diff;
+#endif
 }
 
 /*
@@ -2228,6 +2393,11 @@ static
 void III_overlap(mad_fixed_t const output[36], mad_fixed_t overlap[18],
 		 mad_fixed_t sample[18][32], unsigned int sb)
 {
+# if (PROFILE_I == 1 || PROFILE_II == 1)
+  register unsigned long long clk_cycle0, clk_cyclef, clk_diff;
+  clk_cycle0 = timer_get_count();
+#endif
+
   unsigned int i;
 
 # if defined(ASO_INTERLEAVE2)
@@ -2266,6 +2436,12 @@ void III_overlap(mad_fixed_t const output[36], mad_fixed_t overlap[18],
     overlap[i]    = output[i + 18];
   }
 # endif
+
+# if (PROFILE_I == 1 || PROFILE_II == 1)
+  clk_cyclef = timer_get_count();
+  clk_diff = clk_cyclef - clk_cycle0;
+  profiling_III[15] = clk_diff;
+#endif
 }
 
 /*
@@ -2276,6 +2452,11 @@ static inline
 void III_overlap_z(mad_fixed_t overlap[18],
 		   mad_fixed_t sample[18][32], unsigned int sb)
 {
+# if (PROFILE_I == 1 || PROFILE_II == 1)
+  register unsigned long long clk_cycle0, clk_cyclef, clk_diff;
+  clk_cycle0 = timer_get_count();
+#endif
+
   unsigned int i;
 
 # if defined(ASO_INTERLEAVE2)
@@ -2306,6 +2487,12 @@ void III_overlap_z(mad_fixed_t overlap[18],
     overlap[i]    = 0;
   }
 # endif
+
+# if (PROFILE_I == 1 || PROFILE_II == 1)
+  clk_cyclef = timer_get_count();
+  clk_diff = clk_cyclef - clk_cycle0;
+  profiling_III[16] = clk_diff;
+#endif
 }
 
 /*
@@ -2315,6 +2502,11 @@ void III_overlap_z(mad_fixed_t overlap[18],
 static
 void III_freqinver(mad_fixed_t sample[18][32], unsigned int sb)
 {
+# if (PROFILE_I == 1 || PROFILE_II == 1)
+  register unsigned long long clk_cycle0, clk_cyclef, clk_diff;
+  clk_cycle0 = timer_get_count();
+#endif
+
   unsigned int i;
 
 # if 1 || defined(ASO_INTERLEAVE1) || defined(ASO_INTERLEAVE2)
@@ -2340,6 +2532,12 @@ void III_freqinver(mad_fixed_t sample[18][32], unsigned int sb)
   for (i = 1; i < 18; i += 2)
     sample[i][sb] = -sample[i][sb];
 # endif
+
+# if (PROFILE_I == 1 || PROFILE_II == 1)
+  clk_cyclef = timer_get_count();
+  clk_diff = clk_cyclef - clk_cycle0;
+  profiling_III[17] = clk_diff;
+#endif
 }
 
 /*
@@ -2350,6 +2548,11 @@ static
 enum mad_error III_decode(struct mad_bitptr *ptr, struct mad_frame *frame,
 			  struct sideinfo *si, unsigned int nch)
 {
+# if (PROFILE_I == 1 || PROFILE_II == 1)
+  register unsigned long long clk_cycle0, clk_cyclef, clk_diff;
+  clk_cycle0 = timer_get_count();
+#endif
+
   struct mad_header *header = &frame->header;
   unsigned int sfreqi, ngr, gr;
 
@@ -2506,6 +2709,12 @@ enum mad_error III_decode(struct mad_bitptr *ptr, struct mad_frame *frame,
     }
   }
 
+# if (PROFILE_I == 1 || PROFILE_II == 1)
+  clk_cyclef = timer_get_count();
+  clk_diff = clk_cyclef - clk_cycle0;
+  profiling_III[18] = clk_diff;
+#endif
+
   return MAD_ERROR_NONE;
 }
 
@@ -2515,6 +2724,11 @@ enum mad_error III_decode(struct mad_bitptr *ptr, struct mad_frame *frame,
  */
 int mad_layer_III(struct mad_stream *stream, struct mad_frame *frame)
 {
+# if (PROFILE_I == 1 || PROFILE_II == 1)
+  register unsigned long long clk_cycle0, clk_cyclef, clk_diff;
+  clk_cycle0 = timer_get_count();
+#endif
+
   struct mad_header *header = &frame->header;
   unsigned int nch, priv_bitlen, next_md_begin = 0;
   unsigned int si_len, data_bitlen, md_len;
@@ -2693,6 +2907,12 @@ int mad_layer_III(struct mad_stream *stream, struct mad_frame *frame)
 	   stream->next_frame - frame_free, frame_free);
     stream->md_len += frame_free;
   }
+
+# if (PROFILE_I == 1 || PROFILE_II == 1)
+  clk_cyclef = timer_get_count();
+  clk_diff = clk_cyclef - clk_cycle0;
+  profiling_III[19] = clk_diff;
+#endif
 
   return result;
 }
