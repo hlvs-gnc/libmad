@@ -137,7 +137,7 @@ void mad_bit_skip(struct mad_bitptr *bitptr, unsigned int len)
 unsigned long mad_bit_read(struct mad_bitptr *bitptr, unsigned int len)
 {
 # if (PROFILE_I == 1 || PROFILE_II == 1)
-  register uint64_t clk_cycle0, clk_cyclef, clk_diff;
+  register uint64_t clk_cycle0, clk_cyclef;
   clk_cycle0 = timer_get_count();
 #endif
 
@@ -178,8 +178,7 @@ unsigned long mad_bit_read(struct mad_bitptr *bitptr, unsigned int len)
   
 # if (PROFILE_I == 1 || PROFILE_II == 1)
   clk_cyclef = timer_get_count();
-  clk_diff = clk_cyclef - clk_cycle0;
-  profiling_bit[0] = clk_diff;
+  profiling_bit[0] = clk_cyclef - clk_cycle0;
 #endif
 
   return value;

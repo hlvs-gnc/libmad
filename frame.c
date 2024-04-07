@@ -120,7 +120,7 @@ static
 int decode_header(struct mad_header *header, struct mad_stream *stream)
 {
 # if (PROFILE_I == 1 || PROFILE_II == 1)
-  register uint64_t clk_cycle0, clk_cyclef, clk_diff;
+  register uint64_t clk_cycle0, clk_cyclef;
   clk_cycle0 = timer_get_count();
 #endif
 
@@ -235,8 +235,7 @@ int decode_header(struct mad_header *header, struct mad_stream *stream)
 
 # if (PROFILE_I == 1 || PROFILE_II == 1)
   clk_cyclef = timer_get_count();
-  clk_diff = clk_cyclef - clk_cycle0;
-  profiling_frame[0] = clk_diff;
+  profiling_frame[0] = clk_cyclef - clk_cycle0;
 #endif
 
   return 0;
@@ -311,7 +310,7 @@ int free_bitrate(struct mad_stream *stream, struct mad_header const *header)
 int mad_header_decode(struct mad_header *header, struct mad_stream *stream)
 {
 # if (PROFILE_I == 1 || PROFILE_II == 1)
-  register uint64_t clk_cycle0, clk_cyclef, clk_diff;
+  register uint64_t clk_cycle0, clk_cyclef;
   clk_cycle0 = timer_get_count();
 #endif
 
@@ -441,8 +440,7 @@ int mad_header_decode(struct mad_header *header, struct mad_stream *stream)
 
 # if (PROFILE_I == 1 || PROFILE_II == 1)
   clk_cyclef = timer_get_count();
-  clk_diff = clk_cyclef - clk_cycle0;
-  profiling_frame[1] = clk_diff;
+  profiling_frame[1] = clk_cyclef - clk_cycle0;
 #endif
 
   return 0;
@@ -450,12 +448,11 @@ int mad_header_decode(struct mad_header *header, struct mad_stream *stream)
   fail:
     stream->sync = 0;
 # if (PROFILE_I == 1 || PROFILE_II == 1)
-  clk_cyclef = timer_get_count();
-  clk_diff = clk_cyclef - clk_cycle0;
-  profiling_frame[1] = clk_diff;
+    clk_cyclef = timer_get_count();
+    profiling_frame[1] = clk_cyclef - clk_cycle0;
 #endif
-    return -1;
 
+    return -1;
 }
 
 /*
@@ -465,7 +462,7 @@ int mad_header_decode(struct mad_header *header, struct mad_stream *stream)
 int mad_frame_decode(struct mad_frame *frame, struct mad_stream *stream)
 {
 # if (PROFILE_I == 1 || PROFILE_II == 1)
-  register uint64_t clk_cycle0, clk_cyclef, clk_diff;
+  register uint64_t clk_cycle0, clk_cyclef;
   clk_cycle0 = timer_get_count();
 #endif
 
@@ -504,8 +501,7 @@ int mad_frame_decode(struct mad_frame *frame, struct mad_stream *stream)
 
 # if (PROFILE_I == 1 || PROFILE_II == 1)
   clk_cyclef = timer_get_count();
-  clk_diff = clk_cyclef - clk_cycle0;
-  profiling_frame[2] = clk_diff;
+  profiling_frame[2] = clk_cyclef - clk_cycle0;
 #endif
 
   return 0;
@@ -514,9 +510,9 @@ int mad_frame_decode(struct mad_frame *frame, struct mad_stream *stream)
     stream->anc_bitlen = 0;
 # if (PROFILE_I == 1 || PROFILE_II == 1)
   clk_cyclef = timer_get_count();
-  clk_diff = clk_cyclef - clk_cycle0;
-  profiling_frame[2] = clk_diff;
+  profiling_frame[2] = clk_cyclef - clk_cycle0;
 #endif
+
     return -1;
 }
 

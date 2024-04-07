@@ -74,8 +74,8 @@ mad_fixed_t const linear_table[14] = {
 static
 mad_fixed_t I_sample(struct mad_bitptr *ptr, unsigned int nb)
 {
-# if (PROFILE_I == 1 || PROFILE_I == 1)
-  register uint64_t clk_cycle0, clk_cyclef, clk_diff;
+# if (PROFILE_I == 1)
+  register uint64_t clk_cycle0, clk_cyclef;
   clk_cycle0 = timer_get_count();
 #endif
 
@@ -96,10 +96,9 @@ mad_fixed_t I_sample(struct mad_bitptr *ptr, unsigned int nb)
 
   sample += MAD_F_ONE >> (nb - 1);
 
-# if (PROFILE_I == 1 || PROFILE_II == 1)
+# if (PROFILE_I == 1)
   clk_cyclef = timer_get_count();
-  clk_diff = clk_cyclef - clk_cycle0;
-  profiling_I_II[0] = clk_diff;
+  profiling_I_II[0] = clk_cyclef - clk_cycle0;
 #endif
 
   return mad_f_mul(sample, linear_table[nb - 2]);
@@ -114,8 +113,8 @@ mad_fixed_t I_sample(struct mad_bitptr *ptr, unsigned int nb)
  */
 int mad_layer_I(struct mad_stream *stream, struct mad_frame *frame)
 {
-# if (PROFILE_I == 1 || PROFILE_II == 1)
-  register uint64_t clk_cycle0, clk_cyclef, clk_diff;
+# if (PROFILE_I == 1)
+  register uint64_t clk_cycle0, clk_cyclef;
   clk_cycle0 = timer_get_count();
 #endif
 
@@ -224,10 +223,9 @@ int mad_layer_I(struct mad_stream *stream, struct mad_frame *frame)
     }
   }
 
-# if (PROFILE_I == 1 || PROFILE_II == 1)
+# if (PROFILE_I == 1)
   clk_cyclef = timer_get_count();
-  clk_diff = clk_cyclef - clk_cycle0;
-  profiling_I_II[1] = clk_diff;
+  profiling_I_II[1] = clk_cyclef - clk_cycle0;
 #endif
 
   return 0;
@@ -304,8 +302,8 @@ void II_samples(struct mad_bitptr *ptr,
 		struct quantclass const *quantclass,
 		mad_fixed_t output[3])
 {
-# if (PROFILE_I == 1 || PROFILE_II == 1)
-  register uint64_t clk_cycle0, clk_cyclef, clk_diff;
+# if (PROFILE_I == 1)
+  register uint64_t clk_cycle0, clk_cyclef;
   clk_cycle0 = timer_get_count();
 #endif
 
@@ -349,10 +347,10 @@ void II_samples(struct mad_bitptr *ptr,
     /* s' = factor * s'' */
     /* (to be performed by caller) */
   }
-# if (PROFILE_I == 1 || PROFILE_II == 1)
+# if (PROFILE_I == 1)
   clk_cyclef = timer_get_count();
-  clk_diff = clk_cyclef - clk_cycle0;
-  profiling_I_II[2] = clk_diff;
+  clk_diff = 
+  profiling_I_II[2] = clk_cyclef - clk_cycle0;
 #endif
 }
 
@@ -362,8 +360,8 @@ void II_samples(struct mad_bitptr *ptr,
  */
 int mad_layer_II(struct mad_stream *stream, struct mad_frame *frame)
 {
-# if (PROFILE_I == 1 || PROFILE_II == 1)
-  register uint64_t clk_cycle0, clk_cyclef, clk_diff;
+# if (PROFILE_I == 1)
+  register uint64_t clk_cycle0, clk_cyclef;
   clk_cycle0 = timer_get_count();
 #endif
 
@@ -566,10 +564,9 @@ int mad_layer_II(struct mad_stream *stream, struct mad_frame *frame)
       }
     }
   }
-# if (PROFILE_I == 1 || PROFILE_II == 1)
+# if (PROFILE_I == 1)
   clk_cyclef = timer_get_count();
-  clk_diff = clk_cyclef - clk_cycle0;
-  profiling_I_II[3] = clk_diff;
+  profiling_I_II[3] = clk_cyclef - clk_cycle0;
 #endif
   return 0;
 }
