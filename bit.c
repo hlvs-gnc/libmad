@@ -136,6 +136,11 @@ void mad_bit_skip(struct mad_bitptr *bitptr, unsigned int len)
  */
 unsigned long mad_bit_read(struct mad_bitptr *bitptr, unsigned int len)
 {
+/*
+# ifdef PROFILING
+  timer_reset();
+# endif
+*/
   register unsigned long value;
 
   if (bitptr->left == CHAR_BIT)

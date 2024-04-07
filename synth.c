@@ -52,14 +52,11 @@ void mad_synth_mute(struct mad_synth *synth)
 {
   unsigned int ch, s, v;
 
-  for (ch = 0; ch < 2; ++ch)
-  {
-    for (s = 0; s < 16; ++s)
-    {
-      for (v = 0; v < 8; ++v)
-      {
+  for (ch = 0; ch < 2; ++ch) {
+    for (s = 0; s < 16; ++s) {
+      for (v = 0; v < 8; ++v) {
         synth->filter[ch][0][0][s][v] = synth->filter[ch][0][1][s][v] =
-            synth->filter[ch][1][0][s][v] = synth->filter[ch][1][1][s][v] = 0;
+        synth->filter[ch][1][0][s][v] = synth->filter[ch][1][1][s][v] = 0;
       }
     }
   }
@@ -620,16 +617,14 @@ static void synth_full(struct mad_synth *synth, struct mad_frame const *frame,
   register mad_fixed64lo_t lo;
 
   unsigned int clk_dct[nch][ns];
-
-  for (ch = 0; ch < nch; ++ch)
-  {
+  
+  for (ch = 0; ch < nch; ++ch) {
     sbsample = &frame->sbsample[ch];
-    filter = &synth->filter[ch];
-    phase = synth->phase;
-    pcm1 = synth->pcm.samples[ch];
+    filter   = &synth->filter[ch];
+    phase    = synth->phase;
+    pcm1     = synth->pcm.samples[ch];
 
-    for (s = 0; s < ns; ++s)
-    {
+    for (s = 0; s < ns; ++s) {
       dct32((*sbsample)[s], phase >> 1, (*filter)[0][phase & 1], (*filter)[1][phase & 1]);
       pe = phase & ~1;
       po = ((phase - 1) & 0xf) | 1;
@@ -770,15 +765,13 @@ static void synth_half(struct mad_synth *synth, struct mad_frame const *frame,
   register mad_fixed64hi_t hi;
   register mad_fixed64lo_t lo;
 
-  for (ch = 0; ch < nch; ++ch)
-  {
+  for (ch = 0; ch < nch; ++ch) {
     sbsample = &frame->sbsample[ch];
     filter = &synth->filter[ch];
     phase = synth->phase;
     pcm1 = synth->pcm.samples[ch];
 
-    for (s = 0; s < ns; ++s)
-    {
+    for (s = 0; s < ns; ++s) {
       dct32((*sbsample)[s], phase >> 1, (*filter)[0][phase & 1], (*filter)[1][phase & 1]);
 
       pe = phase & ~1;
