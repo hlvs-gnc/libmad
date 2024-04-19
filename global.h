@@ -24,9 +24,6 @@
 
 /* conditional debugging */
 
-#  include "iob-timer.h"
-#  include "profiling.h"
-
 # if defined(DEBUG) && defined(NDEBUG)
 #  error "cannot define both DEBUG and NDEBUG"
 # endif
@@ -35,10 +32,9 @@
 #  include <stdio.h>
 # endif
 
-# ifdef PROFILING
 #  include "iob-timer.h"
+#  include "profiling.h"
 #  include "printf.h"
-# endif
 
 /* conditional features */
 

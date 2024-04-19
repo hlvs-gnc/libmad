@@ -349,7 +349,6 @@ void II_samples(struct mad_bitptr *ptr,
   }
 # if (PROFILE_I == 1)
   clk_cyclef = timer_get_count();
-  clk_diff = 
   profiling_I_II[2] = clk_cyclef - clk_cycle0;
 #endif
 }
